@@ -1,18 +1,45 @@
 import type { FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
 
 function Login() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const auth = useAuth();
+
+  let from = (location.state as any)?.from?.pathname || '/';
+
   const onSubmit = function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const form = new FormData(e.currentTarget);
     const data = Object.fromEntries(form.entries());
 
-    console.log(data);
+    auth.signin('username', () => {
+      // Ref: Auth Example
+      // https://reactrouter.com/docs/en/v6/examples/auth
+      //
+      // Send them back to the page they tried to visit when they were
+      // redirected to the login page. Use { replace: true } so we don't create
+      // another entry in the history stack for the login page.  This means that
+      // when they get to the protected page and click the back button, they
+      // won't end up back on the login page, which is also really nice for the
+      // user experience.
+      navigate(from, { replace: true });
+    });
   };
 
+  useEffect(() => {
+    if (auth.user !== null) {
+      auth.signin(auth.user.username, () => {
+        navigate(from, { replace: true });
+      });
+    }
+  }, [auth.user]);
+
   return (
-    <div className="bg-0 min-h-screen flex items-center justify-center px-3">
+    <div className="bg-primary min-h-screen flex items-center justify-center px-3">
       <main>
         <h1 className="mb-5 color-white text-5xl text-center">Final Project Timeline</h1>
         <form className="flex flex-col" onSubmit={onSubmit}>

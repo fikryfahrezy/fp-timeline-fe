@@ -1,6 +1,6 @@
+/* eslint-disable */
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import svgr from '@svgr/rollup';
 import Unocss from 'unocss/vite';
 import presetUno from '@unocss/preset-uno';
 
@@ -8,72 +8,39 @@ import presetUno from '@unocss/preset-uno';
 export default defineConfig({
   plugins: [
     react(),
-    svgr(),
     Unocss({
       presets: [presetUno()],
+      theme: {
+        colors: {
+          primary: '#2a0944',
+          secondary: '#3B185F',
+          tertiary: '#A12568',
+          accent: '#FFC107',
+        },
+      },
       rules: [
         [
-          'bg-0',
+          'transition-timing-linear',
           {
-            'background-color': '#2a0944',
+            'transition-timing-function': 'linear',
           },
         ],
-        [
-          'bg-1',
-          {
-            'background-color': '#3B185F',
-          },
-        ],
-        [
-          'bg-2',
-          {
-            'background-color': '#A12568',
-          },
-        ],
-        [
-          'bg-3',
-          {
-            'background-color': '#FFC107',
-          },
-        ],
-        [
-          'form-label',
-          {
-            'margin-bottom': '10px',
-            color: '#fff',
-            'font-size': '18px',
-          },
-        ],
-        [
-          'form-input',
-          {
-            height: '50px',
-            'margin-bottom': '15px',
-            padding: '10px',
-            border: 'solid 3px #ffc107',
-            'border-radius': '5px',
-            'font-size': '18px',
-          },
-        ],
-        [
-          'text-link',
-          {
-            color: '#ffc107',
-            'font-size': '18px',
-          },
-        ],
-        [
-          'btn-primary',
-          {
-            'min-height': '50px',
-            padding: '15px',
-            color: '#fff',
-            'background-color': '#a12568',
-            'border-radius': '5px',
-            border: '0px',
-            'font-size': '18px',
-          },
-        ],
+      ],
+      shortcuts: [
+        {
+          'form-label': 'mb-1 color-white text-5',
+        },
+        {
+          'form-input':
+            'w-100% h-14 mb-4 px-2 py-2 border-solid border-size-3 border-rd-1 border-accent text-5 box-border',
+        },
+        {
+          'text-link': 'color-accent text-5',
+        },
+        {
+          'btn-primary':
+            'min-h-12 px-3 py-3 color-white bg-tertiary border-rd-1 border-transparent text-5 cursor-pointer transition-property-all transition-timing-linear transition-duration-100 hover-brightness-70',
+        },
       ],
     }),
   ],
