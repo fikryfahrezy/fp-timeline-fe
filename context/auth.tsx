@@ -4,6 +4,7 @@
  */
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import User from '@/model/user';
 
 /**
  * This represents some generic auth provider API, like Firebase.
@@ -21,20 +22,6 @@ const fakeAuthProvider = {
 };
 
 export { fakeAuthProvider };
-
-class User {
-  username: string;
-  admin: boolean;
-
-  constructor(username: string, admin: boolean) {
-    this.username = username;
-    this.admin = admin;
-  }
-
-  isAdmin(): boolean {
-    return this.admin === true;
-  }
-}
 
 interface AuthContextType {
   user: User | null;

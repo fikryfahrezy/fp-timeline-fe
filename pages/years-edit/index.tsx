@@ -1,5 +1,5 @@
 import Year from '@/model/year';
-import YearItem from '@/layouts/year/view';
+import YearItem from '@/layouts/year/edit';
 
 const year = {
   id: 0,
@@ -20,7 +20,7 @@ function Years() {
     <main className="h-100% max-w-800px mx-auto py-5">
       <h1 className="color-white">Timeline</h1>
       {yearLines.map((year) => {
-        return <YearItem key={year.getId()} year={year} />;
+        return <YearItem key={year.getId()} />;
       })}
     </main>
   );

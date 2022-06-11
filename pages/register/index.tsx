@@ -2,6 +2,10 @@ import type { FormEvent } from 'react';
 import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
+import Label from '@/components/label';
+import Input from '@/components/input';
+import Anchor from '@/components/anchor';
+import Button from '@/components/button';
 
 function Register() {
   const navigate = useNavigate();
@@ -32,37 +36,17 @@ function Register() {
       <main>
         <h1 className="mb-5 color-white text-5xl text-center">Final Project Timeline</h1>
         <form className="flex flex-col" onSubmit={onSubmit}>
-          <label htmlFor="name" className="form-label">
-            Username
-          </label>
-          <input type="text" id="name" name="name" placeholder="..." className="form-input" />
-          <label htmlFor="username" className="form-label">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            placeholder="..."
-            className="form-input"
-          />
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="..."
-            className="form-input"
-          />
+          <Label htmlFor="name">Name</Label>
+          <Input type="text" id="name" name="name" placeholder="..." />
+          <Label htmlFor="username">Username</Label>
+          <Input type="text" id="username" name="username" placeholder="..." />
+          <Label htmlFor="password">Password</Label>
+          <Input type="password" id="password" name="password" placeholder="..." />
           <div className="flex mt-6 items-center justify-end gap-5">
-            <Link to="/login" className="text-link">
+            <Anchor as={Link} to="/login">
               Log In
-            </Link>
-            <button type="submit" className="btn-primary">
-              Sign Up
-            </button>
+            </Anchor>
+            <Button type="submit">Sign Up</Button>
           </div>
         </form>
       </main>

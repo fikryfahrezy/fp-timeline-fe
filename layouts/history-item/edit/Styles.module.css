@@ -1,0 +1,12 @@
+/* 
+Ref: Method to show native datepicker in Chrome
+https://stackoverflow.com/a/53483852/12976234
+*/
+.input__date::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: -150%;
+  left: -150%;
+  width: 300%;
+  height: 300%;
+  cursor: pointer;
+}

@@ -2,13 +2,21 @@ import type { FormEvent } from 'react';
 import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
+import Label from '@/components/label';
+import Input from '@/components/input';
+import Anchor from '@/components/anchor';
+import Button from '@/components/button';
 
-function Login() {
+type LoginPageProps = {
+  to: string;
+};
+
+function Login({ to }: LoginPageProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useAuth();
 
-  let from = (location.state as any)?.from?.pathname || '/';
+  let from = (location.state as any)?.from?.pathname || to;
 
   const onSubmit = function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -43,33 +51,15 @@ function Login() {
       <main>
         <h1 className="mb-5 color-white text-5xl text-center">Final Project Timeline</h1>
         <form className="flex flex-col" onSubmit={onSubmit}>
-          <label htmlFor="username" className="form-label">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            placeholder="..."
-            className="form-input"
-          />
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="..."
-            className="form-input"
-          />
+          <Label htmlFor="username">Username</Label>
+          <Input type="text" id="username" name="username" placeholder="..." />
+          <Label htmlFor="password">Password</Label>
+          <Input type="password" id="password" name="password" placeholder="..." />
           <div className="flex mt-6 items-center justify-end gap-5">
-            <Link to="/register" className="text-link">
+            <Anchor as={Link} to="/register">
               Sign Up
-            </Link>
-            <button type="submit" className="btn-primary">
-              Log In
-            </button>
+            </Anchor>
+            <Button type="submit">Log In</Button>
           </div>
         </form>
       </main>
