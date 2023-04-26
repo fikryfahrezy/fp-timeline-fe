@@ -1,5 +1,5 @@
 import Timeline from '@/model/timeline';
-import HistoryItem from '@/layouts/history-item-view';
+import HistoryItem from '@/layouts/history-item-edit';
 
 const history = {
   id: 0,
@@ -30,7 +30,7 @@ function History() {
     <main className="h-100% max-w-800px mx-auto py-5">
       <h1>Timeline 2022</h1>
       {timelines.map((timeline) => {
-        return <HistoryItem key={timeline.getId()} timeline={timeline} />;
+        return <HistoryItem key={timeline.getId()} />;
       })}
     </main>
   );
