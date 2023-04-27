@@ -7,10 +7,7 @@ function NotFound() {
   return (
     <div className="bg-primary min-h-screen flex items-center justify-center px-3">
       <main>
-        <div
-          className={`mb-4 color-white text-5xl ${styles.glitch}`}
-          title="~You lost in the matrix~"
-        >
+        <div className={`mb-4 text-5xl ${styles}`} title="~You lost in the matrix~">
           ~You lost in the matrix~
         </div>
         <button

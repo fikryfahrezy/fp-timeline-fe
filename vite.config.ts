@@ -12,10 +12,10 @@ export default defineConfig({
       presets: [presetUno()],
       theme: {
         colors: {
-          primary: '#2a0944',
-          secondary: '#3B185F',
-          tertiary: '#A12568',
-          accent: '#FFC107',
+          primary: '#F7F7F7',
+          secondary: '#EEEEEE',
+          tertiary: '#393E46',
+          accent: '#929AAB',
         },
       },
       rules: [

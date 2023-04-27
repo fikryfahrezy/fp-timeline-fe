@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import Timeline from '@/model/timeline';
-import HistoryItem from '@/layouts/history-item-view';
+import HistoryItem from './HistoryItem';
 
 const history = {
   id: 0,
@@ -26,11 +27,35 @@ const timelines = histories.map((history) => {
 });
 
 function History() {
+  const [isEditable, setIsEditable] = useState(true);
+
+  function onEditClick() {
+    setIsEditable((prevIsEditableState) => {
+      return !prevIsEditableState;
+    });
+  }
+
+  function onChange(value: string) {
+    console.log(value);
+  }
+
   return (
     <main className="h-100% max-w-800px mx-auto py-5">
+      <div className="flex justify-end">
+        <button onClick={onEditClick} className="bg-transparent border-none cursor-pointer">
+          Edit
+        </button>
+      </div>
       <h1>Timeline 2022</h1>
       {timelines.map((timeline) => {
-        return <HistoryItem key={timeline.getId()} timeline={timeline} />;
+        return (
+          <HistoryItem
+            isEditable={isEditable}
+            timeline={timeline}
+            onChange={onChange}
+            key={timeline.getId()}
+          />
+        );
       })}
     </main>
   );
