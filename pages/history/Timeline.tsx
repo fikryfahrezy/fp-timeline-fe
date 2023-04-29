@@ -1,18 +1,23 @@
-import type { ReactNode } from 'react';
+import type { TimelineProps } from './types';
 
-type TimelineProps = {
-  className?: string;
-  children?: ReactNode;
-};
-
-function Timeline({ className, children }: TimelineProps) {
+function Timeline({ children, isEditable, onDelete }: TimelineProps) {
   return (
-    <article
-      className={`relative pl-3 pr-2 pb-6 ml-8 before-content-empty before-absolute before-w-6 before-h-6 before-bg-accent before-b-rd-50% before-top-0 before-right-100% after-content-empty after-absolute after-w-1 after-h-100% after-bg-accent after-top-0 after--left-3.5 ${
-        typeof className === 'string' ? className : ''
-      }`}
-    >
-      {children}
+    <article className="flex">
+      <div className="flex flex-col mr-10px">
+        <button
+          onClick={onDelete}
+          disabled={!isEditable}
+          className={`rounded-full w-6 h-6 border-transparent  ${
+            isEditable ? 'bg-red cursor-pointer' : 'bg-accent'
+          }`}
+        >
+          {isEditable ? 'X' : ''}
+        </button>
+        <span
+          className={`block h-100% w-4px m-auto  ${isEditable ? 'bg-red' : 'bg-accent'}`}
+        ></span>
+      </div>
+      <div>{children}</div>
     </article>
   );
 }

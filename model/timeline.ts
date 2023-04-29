@@ -1,3 +1,11 @@
+type TimelineConstructorParams = {
+  id: number;
+  startDate: string;
+  endDate: string;
+  title: string;
+  description: string;
+};
+
 class Timeline {
   id: number;
   startDate: string;
@@ -5,7 +13,7 @@ class Timeline {
   title: string;
   description: string;
 
-  constructor(id: number, startDate: string, endDate: string, title: string, description: string) {
+  constructor({ id, startDate, endDate, title, description }: TimelineConstructorParams) {
     this.id = id;
     this.startDate = startDate;
     this.endDate = endDate;
@@ -18,11 +26,11 @@ class Timeline {
   }
 
   getStartDate() {
-    return new Date(this.startDate).toDateString();
+    return this.formatDate(this.startDate);
   }
 
   getEndDate() {
-    return new Date(this.endDate).toDateString();
+    return this.formatDate(this.endDate);
   }
 
   getTitle() {
@@ -31,6 +39,14 @@ class Timeline {
 
   getDesciprtion() {
     return this.description;
+  }
+
+  formatDate(dateStr: string) {
+    if (dateStr === '') {
+      return '';
+    }
+
+    return new Date(dateStr).toDateString();
   }
 }
 

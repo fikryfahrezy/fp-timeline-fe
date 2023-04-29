@@ -4,8 +4,12 @@ import Date from './Date';
 import Timeline from './Timeline';
 
 function HistoryItem({ timeline, isEditable, onChange }: HistoryItemProps) {
+  function onDelete() {
+    onChange('delete');
+  }
+
   return (
-    <Timeline>
+    <Timeline isEditable={isEditable} onDelete={onDelete}>
       <div className="flex flex-col gap-5 xl:flex-row">
         <Date isEditable={isEditable} onChange={onChange} content={timeline.getStartDate()} />
         <Date isEditable={isEditable} onChange={onChange} content={timeline.getStartDate()} />
