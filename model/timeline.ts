@@ -26,11 +26,11 @@ class Timeline {
   }
 
   getStartDate() {
-    return this.formatDate(this.startDate);
+    return this.startDate;
   }
 
   getEndDate() {
-    return this.formatDate(this.endDate);
+    return this.endDate;
   }
 
   getTitle() {
@@ -39,14 +39,6 @@ class Timeline {
 
   getDesciprtion() {
     return this.description;
-  }
-
-  formatDate(dateStr: string) {
-    if (dateStr === '') {
-      return '';
-    }
-
-    return new Date(dateStr).toDateString();
   }
 }
 

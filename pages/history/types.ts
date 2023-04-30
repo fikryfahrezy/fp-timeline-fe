@@ -6,23 +6,36 @@ export type EditableComponent = {
   isEditable: boolean;
 };
 
-export type EditableComponentWithOnChange = EditableComponent & {
+export type DateProps = EditableComponent & {
   onChange: (value: string) => void;
-};
-
-export type HistoryItemProps = EditableComponentWithOnChange & {
-  timeline: Timeline;
-};
-
-export type DateProps = EditableComponentWithOnChange & {
   content: string;
 };
 
-export type HistoryPresentationProps = EditableComponentWithOnChange & {
-  onEditClick: () => void;
-  onAddTimelineClick: () => void;
-  timelines: Timeline[];
+export type HistoryItemOnChangeFieldname = 'start_date' | 'end_date' | 'title' | 'description';
+
+export type HistoryItemOnChangeField =
+  | { type: 'INSERT'; field: HistoryItemOnChangeFieldname; value: string }
+  | { type: 'DELETE' };
+
+export type HistoryItemOnChangeParams = HistoryItemOnChangeField & {
+  id: number;
 };
+
+export type HistoryItemField = {
+  onChange: (params: HistoryItemOnChangeParams) => void;
+};
+
+export type HistoryItemProps = EditableComponent &
+  HistoryItemField & {
+    timeline: Timeline;
+  };
+
+export type HistoryPresentationProps = EditableComponent &
+  HistoryItemField & {
+    onEditClick: () => void;
+    onAddTimelineClick: () => void;
+    timelines: Timeline[];
+  };
 
 export type TimelineProps = EditableComponent & {
   onDelete: () => void;

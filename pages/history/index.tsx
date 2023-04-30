@@ -1,3 +1,5 @@
+import type { HistoryItemOnChangeParams } from './types';
+
 import { useState } from 'react';
 import Timeline from '@/model/timeline';
 
@@ -7,7 +9,7 @@ import { validateTimelines } from './validator';
 import { histories } from './constants';
 
 function History() {
-  const [isEditable, setIsEditable] = useState(true);
+  const [isEditable, setIsEditable] = useState(false);
   const [timelines, setTimelines] = useState(
     histories.map((history) => {
       return new Timeline({
@@ -28,8 +30,8 @@ function History() {
     }
   }
 
-  function onChange(value: string) {
-    console.log(value);
+  function onContentChange(params: HistoryItemOnChangeParams) {
+    console.log(params);
   }
 
   function onAddTimelineClick() {
@@ -52,7 +54,7 @@ function History() {
       onAddTimelineClick={onAddTimelineClick}
       onEditClick={onEditClick}
       timelines={timelines}
-      onChange={onChange}
+      onChange={onContentChange}
       isEditable={isEditable}
     />
   );
