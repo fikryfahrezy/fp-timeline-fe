@@ -23,7 +23,7 @@ function HistoryPresentation({
             isEditable={isEditable}
             timeline={timeline}
             onChange={onChange}
-            key={timeline.getId()}
+            key={timeline.id}
           />
         );
       })}

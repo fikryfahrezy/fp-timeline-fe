@@ -1,6 +1,10 @@
-import type { HistoryItemOnChangeParams } from './types';
+import type {
+  HistoryItemOnChangeParams,
+  HistoryItemOnInsertParams,
+  HistoryItemIdentifier,
+} from './types';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Timeline from '@/model/timeline';
 
 import Presentation from './Presentation';
@@ -22,21 +26,82 @@ function History() {
     }),
   );
 
+  const timelinesSync = useRef(
+    histories.map((history) => {
+      return new Timeline({
+        id: history['id'],
+        startDate: history['start_date'],
+        endDate: history['end_date'],
+        title: history['title'],
+        description: history['description'],
+      });
+    }),
+  );
+
   function onEditClick() {
-    if (validateTimelines(timelines)) {
+    if (validateTimelines(timelinesSync.current)) {
       setIsEditable((prevIsEditableState) => {
         return !prevIsEditableState;
       });
+
+      setTimelines(timelinesSync.current);
     }
   }
 
+  function onContentInsert(params: HistoryItemOnInsertParams) {
+    const prevTimelines = timelinesSync.current;
+    const changedTimelineIndex = prevTimelines.findIndex((prevTimeline) => {
+      return prevTimeline.id == params.id;
+    });
+
+    if (changedTimelineIndex === -1) {
+      return;
+    }
+
+    const changedTimeline = prevTimelines[changedTimelineIndex];
+    changedTimeline[params.field] = params.value;
+
+    timelinesSync.current = [
+      ...prevTimelines.slice(0, changedTimelineIndex),
+      changedTimeline,
+      ...prevTimelines.slice(changedTimelineIndex + 1),
+    ];
+  }
+
+  function onContentDelete(params: HistoryItemIdentifier) {
+    setTimelines((prevTimelines) => {
+      const changedTimelineIndex = prevTimelines.findIndex((prevTimeline) => {
+        return prevTimeline.id == params.id;
+      });
+
+      if (changedTimelineIndex === -1) {
+        return prevTimelines;
+      }
+
+      const newTimelines = [
+        ...prevTimelines.slice(0, changedTimelineIndex),
+        ...prevTimelines.slice(changedTimelineIndex + 1),
+      ];
+
+      timelinesSync.current = newTimelines;
+      return newTimelines;
+    });
+  }
+
   function onContentChange(params: HistoryItemOnChangeParams) {
-    console.log(params);
+    switch (params.type) {
+      case 'DELETE':
+        onContentDelete(params);
+        break;
+      case 'INSERT':
+        onContentInsert(params);
+        break;
+    }
   }
 
   function onAddTimelineClick() {
     setTimelines((prevTimelines) => {
-      return [
+      const newTimelines = [
         ...prevTimelines,
         new Timeline({
           id: prevTimelines.length,
@@ -46,8 +111,13 @@ function History() {
           description: 'Description Placeholder',
         }),
       ];
+
+      timelinesSync.current = newTimelines;
+      return newTimelines;
     });
   }
+
+  console.log(timelines, timelinesSync);
 
   return (
     <Presentation

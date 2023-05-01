@@ -7,38 +7,54 @@ type TimelineConstructorParams = {
 };
 
 class Timeline {
-  id: number;
-  startDate: string;
-  endDate: string;
-  title: string;
-  description: string;
+  #id = 0;
+  #startDate = '';
+  #endDate = '';
+  #title = '';
+  #description = '';
 
   constructor({ id, startDate, endDate, title, description }: TimelineConstructorParams) {
-    this.id = id;
-    this.startDate = startDate;
-    this.endDate = endDate;
-    this.title = title;
-    this.description = description;
+    this.#id = id;
+    this.#startDate = startDate;
+    this.#endDate = endDate;
+    this.#title = title;
+    this.#description = description;
   }
 
-  getId() {
-    return this.id;
+  get id() {
+    return this.#id;
   }
 
-  getStartDate() {
-    return this.startDate;
+  get startDate() {
+    return this.#startDate;
   }
 
-  getEndDate() {
-    return this.endDate;
+  set startDate(startDate: string) {
+    this.#startDate = startDate;
   }
 
-  getTitle() {
-    return this.title;
+  get endDate() {
+    return this.#endDate;
   }
 
-  getDesciprtion() {
-    return this.description;
+  set endDate(endDate: string) {
+    this.#endDate = endDate;
+  }
+
+  get title() {
+    return this.#title;
+  }
+
+  set title(title: string) {
+    this.#title = title;
+  }
+
+  get description() {
+    return this.#description;
+  }
+
+  set description(description: string) {
+    this.#description = description;
   }
 }
 

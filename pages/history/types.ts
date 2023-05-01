@@ -11,15 +11,20 @@ export type DateProps = EditableComponent & {
   content: string;
 };
 
-export type HistoryItemOnChangeFieldname = 'start_date' | 'end_date' | 'title' | 'description';
-
-export type HistoryItemOnChangeField =
-  | { type: 'INSERT'; field: HistoryItemOnChangeFieldname; value: string }
-  | { type: 'DELETE' };
-
-export type HistoryItemOnChangeParams = HistoryItemOnChangeField & {
+export type HistoryItemIdentifier = {
   id: number;
 };
+
+export type HistoryItemOnInsertFieldname = 'startDate' | 'endDate' | 'title' | 'description';
+
+export type HistoryItemOnInsertParams = HistoryItemIdentifier & {
+  field: HistoryItemOnInsertFieldname;
+  value: string;
+};
+
+export type HistoryItemOnChangeParams =
+  | ({ type: 'INSERT' } & HistoryItemOnInsertParams)
+  | ({ type: 'DELETE' } & HistoryItemIdentifier);
 
 export type HistoryItemField = {
   onChange: (params: HistoryItemOnChangeParams) => void;
