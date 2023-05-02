@@ -4,7 +4,7 @@ import type {
   HistoryItemIdentifier,
 } from './types';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Timeline from '@/model/timeline';
 
 import Presentation from './Presentation';
@@ -12,44 +12,50 @@ import Presentation from './Presentation';
 import { validateTimelines } from './validator';
 import { histories } from './constants';
 
+function generateHistories() {
+  return histories.map((history) => {
+    return new Timeline({
+      id: history['id'],
+      startDate: history['start_date'],
+      endDate: history['end_date'],
+      title: history['title'],
+      description: history['description'],
+    });
+  });
+}
+
 function History() {
   const [isEditable, setIsEditable] = useState(false);
-  const [timelines, setTimelines] = useState(
-    histories.map((history) => {
-      return new Timeline({
-        id: history['id'],
-        startDate: history['start_date'],
-        endDate: history['end_date'],
-        title: history['title'],
-        description: history['description'],
-      });
-    }),
-  );
+  const [timelines, setTimelines] = useState(() => {
+    return generateHistories();
+  });
 
-  const timelinesSync = useRef(
-    histories.map((history) => {
-      return new Timeline({
-        id: history['id'],
-        startDate: history['start_date'],
-        endDate: history['end_date'],
-        title: history['title'],
-        description: history['description'],
-      });
-    }),
-  );
+  const timelinesSync = useRef<Timeline[] | null>(null);
+  if (timelinesSync.current === null) {
+    timelinesSync.current = generateHistories();
+  }
+
+  function getCurrentTimelineSync() {
+    if (timelinesSync.current === null) {
+      return [];
+    }
+
+    return timelinesSync.current;
+  }
 
   function onEditClick() {
-    if (validateTimelines(timelinesSync.current)) {
+    const currentTimelineSync = getCurrentTimelineSync();
+    if (validateTimelines(currentTimelineSync)) {
       setIsEditable((prevIsEditableState) => {
         return !prevIsEditableState;
       });
 
-      setTimelines(timelinesSync.current);
+      setTimelines(currentTimelineSync);
     }
   }
 
   function onContentInsert(params: HistoryItemOnInsertParams) {
-    const prevTimelines = timelinesSync.current;
+    const prevTimelines = getCurrentTimelineSync();
     const changedTimelineIndex = prevTimelines.findIndex((prevTimeline) => {
       return prevTimeline.id == params.id;
     });
@@ -117,7 +123,25 @@ function History() {
     });
   }
 
-  console.log(timelines, timelinesSync);
+  useEffect(() => {
+    // Create WebSocket connection.
+    const socket = new WebSocket('ws://localhost:8888/ws');
+
+    // Connection opened
+    socket.addEventListener('open', (event) => {
+      console.log(event);
+      socket.send('Hello Server!');
+    });
+
+    // Listen for messages
+    socket.addEventListener('message', (event) => {
+      console.log('Message from server ', event.data);
+    });
+
+    () => {
+      socket.close();
+    };
+  }, []);
 
   return (
     <Presentation
