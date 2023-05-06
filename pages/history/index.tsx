@@ -30,6 +30,7 @@ function History() {
     return generateHistories();
   });
 
+  const ws = useRef<WebSocket | null>(null);
   const timelinesSync = useRef<Timeline[] | null>(null);
   if (timelinesSync.current === null) {
     timelinesSync.current = generateHistories();
@@ -54,7 +55,22 @@ function History() {
     }
   }
 
-  function onContentInsert(params: HistoryItemOnInsertParams) {
+  function sendTimelineToServer(timeline: Timeline) {
+    if (ws.current === null) {
+      return;
+    }
+
+    const timelineMessage = {
+      id: timeline.id,
+      title: timeline.title,
+      description: timeline.description,
+      start_date: timeline.startDate,
+      end_date: timeline.endDate,
+    };
+    ws.current.send(JSON.stringify(timelineMessage));
+  }
+
+  function onTimelineInsert(params: HistoryItemOnInsertParams) {
     const prevTimelines = getCurrentTimelineSync();
     const changedTimelineIndex = prevTimelines.findIndex((prevTimeline) => {
       return prevTimeline.id == params.id;
@@ -67,6 +83,8 @@ function History() {
     const changedTimeline = prevTimelines[changedTimelineIndex];
     changedTimeline[params.field] = params.value;
 
+    sendTimelineToServer(changedTimeline);
+
     timelinesSync.current = [
       ...prevTimelines.slice(0, changedTimelineIndex),
       changedTimeline,
@@ -74,7 +92,7 @@ function History() {
     ];
   }
 
-  function onContentDelete(params: HistoryItemIdentifier) {
+  function onTimelineDelete(params: HistoryItemIdentifier) {
     setTimelines((prevTimelines) => {
       const changedTimelineIndex = prevTimelines.findIndex((prevTimeline) => {
         return prevTimeline.id == params.id;
@@ -94,13 +112,13 @@ function History() {
     });
   }
 
-  function onContentChange(params: HistoryItemOnChangeParams) {
+  function onTimelinesChange(params: HistoryItemOnChangeParams) {
     switch (params.type) {
       case 'DELETE':
-        onContentDelete(params);
+        onTimelineDelete(params);
         break;
       case 'INSERT':
-        onContentInsert(params);
+        onTimelineInsert(params);
         break;
     }
   }
@@ -138,7 +156,9 @@ function History() {
       console.log('Message from server ', event.data);
     });
 
-    () => {
+    ws.current = socket;
+
+    return () => {
       socket.close();
     };
   }, []);
@@ -148,7 +168,7 @@ function History() {
       onAddTimelineClick={onAddTimelineClick}
       onEditClick={onEditClick}
       timelines={timelines}
-      onChange={onContentChange}
+      onChange={onTimelinesChange}
       isEditable={isEditable}
     />
   );
