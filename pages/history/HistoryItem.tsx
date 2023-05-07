@@ -1,7 +1,9 @@
 import type { HistoryItemProps } from './types';
 
-import Date from './Date';
 import Timeline from './Timeline';
+import Date from './Date';
+import Title from './Title';
+import Description from './Description';
 
 function HistoryItem({ timeline, isEditable, onChange }: HistoryItemProps) {
   function onDelete() {
@@ -26,31 +28,13 @@ function HistoryItem({ timeline, isEditable, onChange }: HistoryItemProps) {
 
   return (
     <Timeline isEditable={isEditable} onDelete={onDelete}>
-      <div className="flex flex-col gap-5 xl:flex-row">
-        <Date isEditable={isEditable} onChange={onStartDateChange} content={timeline.startDate} />
-        <Date isEditable={isEditable} onChange={onEndDateChange} content={timeline.endDate} />
+      <div className="flex flex-col gap-5 xl:flex-row w-full">
+        <Date onChange={onStartDateChange} content={timeline.startDate} />
+        <Date onChange={onEndDateChange} content={timeline.endDate} />
       </div>
       <div className="flex flex-col gap-1">
-        <h2
-          className="mb-2 bg-transparent border-0 text-2xl font-bold"
-          contentEditable={isEditable}
-          suppressContentEditableWarning={isEditable}
-          onKeyDown={(event) => {
-            onTitleChange((event.target as HTMLElement).innerText);
-          }}
-        >
-          {timeline.title}
-        </h2>
-        <pre
-          className="bg-transparent border-0 text-4 break-word whitespace-break-spaces"
-          contentEditable={isEditable}
-          suppressContentEditableWarning={isEditable}
-          onKeyDown={(event) => {
-            onDescriptionChange((event.target as HTMLElement).innerText);
-          }}
-        >
-          {timeline.description}
-        </pre>
+        <Title onChange={onTitleChange} content={timeline.title} />
+        <Description onChange={onDescriptionChange} content={timeline.description} />
       </div>
     </Timeline>
   );

@@ -2,14 +2,15 @@ import type {
   HistoryItemOnChangeParams,
   HistoryItemOnInsertParams,
   HistoryItemIdentifier,
+  HistoryItemOnChangeType,
 } from './types';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import Timeline from '@/model/timeline';
 
 import Presentation from './Presentation';
+import useWebsocket, { type UseWebsocketOptions } from './useWebsocket';
 
-import { validateTimelines } from './validator';
 import { histories } from './constants';
 
 function generateHistories() {
@@ -30,48 +31,35 @@ function History() {
     return generateHistories();
   });
 
-  const ws = useRef<WebSocket | null>(null);
-  const timelinesSync = useRef<Timeline[] | null>(null);
-  if (timelinesSync.current === null) {
-    timelinesSync.current = generateHistories();
-  }
+  const onReceiveMessage: UseWebsocketOptions['onReceiveMessage'] = useCallback((data) => {
+    console.log(data);
+  }, []);
 
-  function getCurrentTimelineSync() {
-    if (timelinesSync.current === null) {
-      return [];
-    }
-
-    return timelinesSync.current;
-  }
+  const { sendMessage } = useWebsocket({
+    onReceiveMessage,
+    url: 'ws://localhost:8888/ws',
+  });
 
   function onEditClick() {
-    const currentTimelineSync = getCurrentTimelineSync();
-    if (validateTimelines(currentTimelineSync)) {
-      setIsEditable((prevIsEditableState) => {
-        return !prevIsEditableState;
-      });
-
-      setTimelines(currentTimelineSync);
-    }
+    setIsEditable((prevIsEditableState) => {
+      return !prevIsEditableState;
+    });
   }
 
-  function sendTimelineToServer(timeline: Timeline) {
-    if (ws.current === null) {
-      return;
-    }
-
+  function sendTimelineToServer(type: HistoryItemOnChangeType, timeline: Timeline) {
     const timelineMessage = {
+      type,
       id: timeline.id,
       title: timeline.title,
       description: timeline.description,
       start_date: timeline.startDate,
       end_date: timeline.endDate,
     };
-    ws.current.send(JSON.stringify(timelineMessage));
+    sendMessage(JSON.stringify(timelineMessage));
   }
 
   function onTimelineInsert(params: HistoryItemOnInsertParams) {
-    const prevTimelines = getCurrentTimelineSync();
+    const prevTimelines = timelines;
     const changedTimelineIndex = prevTimelines.findIndex((prevTimeline) => {
       return prevTimeline.id == params.id;
     });
@@ -83,32 +71,32 @@ function History() {
     const changedTimeline = prevTimelines[changedTimelineIndex];
     changedTimeline[params.field] = params.value;
 
-    sendTimelineToServer(changedTimeline);
-
-    timelinesSync.current = [
+    sendTimelineToServer('INSERT', changedTimeline);
+    setTimelines([
       ...prevTimelines.slice(0, changedTimelineIndex),
       changedTimeline,
+      ...prevTimelines.slice(changedTimelineIndex + 1),
+    ]);
+  }
+
+  function deleteTimeline(prevTimelines: Timeline[], timelineId: number) {
+    const changedTimelineIndex = prevTimelines.findIndex((prevTimeline) => {
+      return prevTimeline.id == timelineId;
+    });
+
+    if (changedTimelineIndex === -1) {
+      return prevTimelines;
+    }
+
+    return [
+      ...prevTimelines.slice(0, changedTimelineIndex),
       ...prevTimelines.slice(changedTimelineIndex + 1),
     ];
   }
 
   function onTimelineDelete(params: HistoryItemIdentifier) {
     setTimelines((prevTimelines) => {
-      const changedTimelineIndex = prevTimelines.findIndex((prevTimeline) => {
-        return prevTimeline.id == params.id;
-      });
-
-      if (changedTimelineIndex === -1) {
-        return prevTimelines;
-      }
-
-      const newTimelines = [
-        ...prevTimelines.slice(0, changedTimelineIndex),
-        ...prevTimelines.slice(changedTimelineIndex + 1),
-      ];
-
-      timelinesSync.current = newTimelines;
-      return newTimelines;
+      return deleteTimeline(prevTimelines, params.id);
     });
   }
 
@@ -124,44 +112,19 @@ function History() {
   }
 
   function onAddTimelineClick() {
-    setTimelines((prevTimelines) => {
-      const newTimelines = [
-        ...prevTimelines,
-        new Timeline({
-          id: prevTimelines.length,
-          startDate: '2022-01-01',
-          endDate: '2023-01-01',
-          title: 'Title Placeholder',
-          description: 'Description Placeholder',
-        }),
-      ];
+    const newTimeline = new Timeline({
+      id: timelines.length + 1,
+      startDate: '2022-01-01',
+      endDate: '2023-01-01',
+      title: 'Title Placeholder',
+      description: 'Description Placeholder',
+    });
 
-      timelinesSync.current = newTimelines;
-      return newTimelines;
+    sendTimelineToServer('INSERT', newTimeline);
+    setTimelines((prevTimelines) => {
+      return [...prevTimelines, newTimeline];
     });
   }
-
-  useEffect(() => {
-    // Create WebSocket connection.
-    const socket = new WebSocket('ws://localhost:8888/ws');
-
-    // Connection opened
-    socket.addEventListener('open', (event) => {
-      console.log(event);
-      socket.send('Hello Server!');
-    });
-
-    // Listen for messages
-    socket.addEventListener('message', (event) => {
-      console.log('Message from server ', event.data);
-    });
-
-    ws.current = socket;
-
-    return () => {
-      socket.close();
-    };
-  }, []);
 
   return (
     <Presentation

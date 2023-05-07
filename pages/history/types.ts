@@ -6,7 +6,7 @@ export type EditableComponent = {
   isEditable: boolean;
 };
 
-export type DateProps = EditableComponent & {
+export type FieldProps = {
   onChange: (value: string) => void;
   content: string;
 };
@@ -21,6 +21,8 @@ export type HistoryItemOnInsertParams = HistoryItemIdentifier & {
   field: HistoryItemOnInsertFieldname;
   value: string;
 };
+
+export type HistoryItemOnChangeType = 'INSERT' | 'DELETE';
 
 export type HistoryItemOnChangeParams =
   | ({ type: 'INSERT' } & HistoryItemOnInsertParams)
