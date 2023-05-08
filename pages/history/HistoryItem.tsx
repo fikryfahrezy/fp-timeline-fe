@@ -1,4 +1,4 @@
-import type { HistoryItemProps } from './types';
+import { type HistoryItemProps } from './types';
 
 import Timeline from './Timeline';
 import Date from './Date';

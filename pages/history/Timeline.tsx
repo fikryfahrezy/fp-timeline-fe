@@ -1,4 +1,4 @@
-import type { TimelineProps } from './types';
+import { type TimelineProps } from './types';
 
 function Timeline({ children, isEditable, onDelete }: TimelineProps) {
   return (

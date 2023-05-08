@@ -1,4 +1,4 @@
-import type { HistoryPresentationProps } from './types';
+import { type HistoryPresentationProps } from './types';
 
 import HistoryItem from './HistoryItem';
 

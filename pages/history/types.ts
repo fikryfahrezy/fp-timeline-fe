@@ -48,3 +48,19 @@ export type TimelineProps = EditableComponent & {
   onDelete: () => void;
   children?: ReactNode;
 };
+
+export type ChangeTimelineParams = {
+  prevTimelines: Timeline[];
+  timelineId: number;
+  field: HistoryItemOnInsertFieldname;
+  value: string;
+};
+
+export type TimelineMessage = {
+  description: string;
+  end_date: string;
+  id: number;
+  start_date: string;
+  title: string;
+  type: HistoryItemOnChangeType;
+};

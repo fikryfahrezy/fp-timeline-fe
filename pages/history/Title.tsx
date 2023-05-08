@@ -1,4 +1,4 @@
-import type { FieldProps } from './types';
+import { type FieldProps } from './types';
 
 function Title({ content, onChange }: FieldProps) {
   return (

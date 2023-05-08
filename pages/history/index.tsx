@@ -1,8 +1,9 @@
-import type {
-  HistoryItemOnChangeParams,
-  HistoryItemOnInsertParams,
-  HistoryItemIdentifier,
-  HistoryItemOnChangeType,
+import {
+  type HistoryItemOnChangeParams,
+  type HistoryItemOnInsertParams,
+  type HistoryItemIdentifier,
+  type HistoryItemOnChangeType,
+  type TimelineMessage,
 } from './types';
 
 import { useState, useCallback } from 'react';
@@ -11,19 +12,8 @@ import Timeline from '@/model/timeline';
 import Presentation from './Presentation';
 import useWebsocket, { type UseWebsocketOptions } from './useWebsocket';
 
-import { histories } from './constants';
-
-function generateHistories() {
-  return histories.map((history) => {
-    return new Timeline({
-      id: history['id'],
-      startDate: history['start_date'],
-      endDate: history['end_date'],
-      title: history['title'],
-      description: history['description'],
-    });
-  });
-}
+import { changeTimeline, deleteTimeline, setTimeline } from './mutator';
+import { generateHistories } from './utils';
 
 function History() {
   const [isEditable, setIsEditable] = useState(false);
@@ -32,7 +22,10 @@ function History() {
   });
 
   const onReceiveMessage: UseWebsocketOptions['onReceiveMessage'] = useCallback((data) => {
-    console.log(data);
+    const newTimelineMessage: TimelineMessage = JSON.parse(data);
+    setTimelines((prevTimelines) => {
+      return setTimeline(prevTimelines, newTimelineMessage);
+    });
   }, []);
 
   const { sendMessage } = useWebsocket({
@@ -59,39 +52,18 @@ function History() {
   }
 
   function onTimelineInsert(params: HistoryItemOnInsertParams) {
-    const prevTimelines = timelines;
-    const changedTimelineIndex = prevTimelines.findIndex((prevTimeline) => {
-      return prevTimeline.id == params.id;
+    const [changedTimeline, newTimelines] = changeTimeline({
+      prevTimelines: timelines,
+      timelineId: params.id,
+      field: params.field,
+      value: params.value,
     });
 
-    if (changedTimelineIndex === -1) {
-      return;
+    if (changedTimeline !== null) {
+      sendTimelineToServer('INSERT', changedTimeline);
     }
 
-    const changedTimeline = prevTimelines[changedTimelineIndex];
-    changedTimeline[params.field] = params.value;
-
-    sendTimelineToServer('INSERT', changedTimeline);
-    setTimelines([
-      ...prevTimelines.slice(0, changedTimelineIndex),
-      changedTimeline,
-      ...prevTimelines.slice(changedTimelineIndex + 1),
-    ]);
-  }
-
-  function deleteTimeline(prevTimelines: Timeline[], timelineId: number) {
-    const changedTimelineIndex = prevTimelines.findIndex((prevTimeline) => {
-      return prevTimeline.id == timelineId;
-    });
-
-    if (changedTimelineIndex === -1) {
-      return prevTimelines;
-    }
-
-    return [
-      ...prevTimelines.slice(0, changedTimelineIndex),
-      ...prevTimelines.slice(changedTimelineIndex + 1),
-    ];
+    setTimelines(newTimelines);
   }
 
   function onTimelineDelete(params: HistoryItemIdentifier) {

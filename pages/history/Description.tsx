@@ -1,4 +1,4 @@
-import type { FieldProps } from './types';
+import { type FieldProps } from './types';
 
 function Description({ content, onChange }: FieldProps) {
   return (
