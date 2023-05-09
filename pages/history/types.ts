@@ -56,11 +56,14 @@ export type ChangeTimelineParams = {
   value: string;
 };
 
-export type TimelineMessage = {
+export type TimelineResponse = {
   description: string;
   end_date: string;
   id: number;
   start_date: string;
   title: string;
+};
+
+export type TimelineMessage = TimelineResponse & {
   type: HistoryItemOnChangeType;
 };

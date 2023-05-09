@@ -4,22 +4,21 @@ import {
   type HistoryItemIdentifier,
   type HistoryItemOnChangeType,
   type TimelineMessage,
+  type TimelineResponse,
 } from './types';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Timeline from '@/model/timeline';
 
 import Presentation from './Presentation';
 import useWebsocket, { type UseWebsocketOptions } from './useWebsocket';
 
 import { changeTimeline, deleteTimeline, setTimeline } from './mutator';
-import { generateHistories } from './utils';
+import { timelineResponseToState } from './transformer';
 
 function History() {
   const [isEditable, setIsEditable] = useState(false);
-  const [timelines, setTimelines] = useState(() => {
-    return generateHistories();
-  });
+  const [timelines, setTimelines] = useState<Timeline[]>([]);
 
   const onReceiveMessage: UseWebsocketOptions['onReceiveMessage'] = useCallback((data) => {
     const newTimelineMessage: TimelineMessage = JSON.parse(data);
@@ -97,6 +96,16 @@ function History() {
       return [...prevTimelines, newTimeline];
     });
   }
+
+  useEffect(() => {
+    fetch('http://localhost:8888/timelines')
+      .then((res) => {
+        return res.json();
+      })
+      .then((timelinesResponse: TimelineResponse[]) => {
+        setTimelines(timelineResponseToState(timelinesResponse));
+      });
+  }, []);
 
   return (
     <Presentation
