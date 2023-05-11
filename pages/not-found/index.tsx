@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './Styles.module.css';
 
-function NotFound() {
+export function Component() {
   const navigate = useNavigate();
 
   return (
@@ -24,4 +24,4 @@ function NotFound() {
   );
 }
 
-export default NotFound;
+Component.displayName = 'NotFound';

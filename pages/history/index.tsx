@@ -16,8 +16,7 @@ import useWebsocket, { type UseWebsocketOptions } from './useWebsocket';
 import { changeTimeline, deleteTimeline, setTimeline } from './mutator';
 import { timelineResponseToState } from './transformer';
 
-function History() {
-  const [isEditable, setIsEditable] = useState(false);
+export function Component() {
   const [timelines, setTimelines] = useState<Timeline[]>([]);
 
   const onReceiveMessage: UseWebsocketOptions['onReceiveMessage'] = useCallback((data) => {
@@ -31,12 +30,6 @@ function History() {
     onReceiveMessage,
     url: 'ws://localhost:8888/ws',
   });
-
-  function onEditClick() {
-    setIsEditable((prevIsEditableState) => {
-      return !prevIsEditableState;
-    });
-  }
 
   function sendTimelineToServer(type: HistoryItemOnChangeType, timeline: Timeline) {
     const timelineMessage = {
@@ -110,12 +103,10 @@ function History() {
   return (
     <Presentation
       onAddTimelineClick={onAddTimelineClick}
-      onEditClick={onEditClick}
       timelines={timelines}
       onChange={onTimelinesChange}
-      isEditable={isEditable}
     />
   );
 }
 
-export default History;
+Component.displayName = 'History';

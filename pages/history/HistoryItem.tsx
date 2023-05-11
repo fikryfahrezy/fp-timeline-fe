@@ -5,7 +5,7 @@ import Date from './Date';
 import Title from './Title';
 import Description from './Description';
 
-function HistoryItem({ timeline, isEditable, onChange }: HistoryItemProps) {
+function HistoryItem({ timeline, onChange }: HistoryItemProps) {
   function onDelete() {
     onChange({ id: timeline.id, type: 'DELETE' });
   }
@@ -27,7 +27,7 @@ function HistoryItem({ timeline, isEditable, onChange }: HistoryItemProps) {
   }
 
   return (
-    <Timeline isEditable={isEditable} onDelete={onDelete}>
+    <Timeline onDelete={onDelete}>
       <div className="flex flex-col gap-5 xl:flex-row w-full">
         <Date onChange={onStartDateChange} content={timeline.startDate} />
         <Date onChange={onEndDateChange} content={timeline.endDate} />

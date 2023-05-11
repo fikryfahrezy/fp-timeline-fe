@@ -2,10 +2,6 @@ import type { ReactNode } from 'react';
 
 import Timeline from '@/model/timeline';
 
-export type EditableComponent = {
-  isEditable: boolean;
-};
-
 export type FieldProps = {
   onChange: (value: string) => void;
   content: string;
@@ -32,19 +28,16 @@ export type HistoryItemField = {
   onChange: (params: HistoryItemOnChangeParams) => void;
 };
 
-export type HistoryItemProps = EditableComponent &
-  HistoryItemField & {
-    timeline: Timeline;
-  };
+export type HistoryItemProps = HistoryItemField & {
+  timeline: Timeline;
+};
 
-export type HistoryPresentationProps = EditableComponent &
-  HistoryItemField & {
-    onEditClick: () => void;
-    onAddTimelineClick: () => void;
-    timelines: Timeline[];
-  };
+export type HistoryPresentationProps = HistoryItemField & {
+  onAddTimelineClick: () => void;
+  timelines: Timeline[];
+};
 
-export type TimelineProps = EditableComponent & {
+export type TimelineProps = {
   onDelete: () => void;
   children?: ReactNode;
 };
