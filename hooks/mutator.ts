@@ -8,13 +8,17 @@ export function deleteTimeline(prevTimelines: Timeline[], timelineId: number) {
   });
 
   if (changedTimelineIndex === -1) {
-    return prevTimelines;
+    return [null, prevTimelines] as const;
   }
 
-  return [
+  const newTimelines = [
     ...prevTimelines.slice(0, changedTimelineIndex),
     ...prevTimelines.slice(changedTimelineIndex + 1),
   ];
+
+  const deletedTimeline = prevTimelines[changedTimelineIndex];
+
+  return [deletedTimeline, newTimelines] as const;
 }
 
 export function changeTimeline({ prevTimelines, timelineId, field, value }: ChangeTimelineParams) {

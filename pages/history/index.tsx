@@ -1,37 +1,21 @@
+import { type TimelineChangeType } from '@/hooks/types';
 import {
-  type HistoryItemOnChangeParams,
-  type HistoryItemOnInsertParams,
-  type HistoryItemIdentifier,
-  type HistoryItemOnChangeType,
-  type TimelineMessage,
-  type TimelineResponse,
+  type TimelineOnChangeParams,
+  type TimelineOnInsertParams,
+  type TimelineIdentifier,
 } from './types';
 
-import { useState, useCallback, useEffect } from 'react';
 import Timeline from '@/model/timeline';
 
 import Presentation from './Presentation';
-import useWebsocket, { type UseWebsocketOptions } from './useWebsocket';
+import useTimelineManagement from '@/hooks/useTimelineManagement';
 
-import { changeTimeline, deleteTimeline, setTimeline } from './mutator';
-import { timelineResponseToState } from './transformer';
+import { changeTimeline, deleteTimeline } from '@/hooks/mutator';
 
 export function Component() {
-  const [timelines, setTimelines] = useState<Timeline[]>([]);
+  const { timelines, setTimelines, sendMessage } = useTimelineManagement();
 
-  const onReceiveMessage: UseWebsocketOptions['onReceiveMessage'] = useCallback((data) => {
-    const newTimelineMessage: TimelineMessage = JSON.parse(data);
-    setTimelines((prevTimelines) => {
-      return setTimeline(prevTimelines, newTimelineMessage);
-    });
-  }, []);
-
-  const { sendMessage } = useWebsocket({
-    onReceiveMessage,
-    url: 'ws://localhost:8888/ws',
-  });
-
-  function sendTimelineToServer(type: HistoryItemOnChangeType, timeline: Timeline) {
+  function sendTimelineToServer(type: TimelineChangeType, timeline: Timeline) {
     const timelineMessage = {
       type,
       id: timeline.id,
@@ -43,7 +27,7 @@ export function Component() {
     sendMessage(JSON.stringify(timelineMessage));
   }
 
-  function onTimelineInsert(params: HistoryItemOnInsertParams) {
+  function onTimelineInsert(params: TimelineOnInsertParams) {
     const [changedTimeline, newTimelines] = changeTimeline({
       prevTimelines: timelines,
       timelineId: params.id,
@@ -58,13 +42,17 @@ export function Component() {
     setTimelines(newTimelines);
   }
 
-  function onTimelineDelete(params: HistoryItemIdentifier) {
-    setTimelines((prevTimelines) => {
-      return deleteTimeline(prevTimelines, params.id);
-    });
+  function onTimelineDelete(params: TimelineIdentifier) {
+    const [deletedTimeline, newTimelines] = deleteTimeline(timelines, params.id);
+
+    if (deletedTimeline !== null) {
+      sendTimelineToServer('DELETE', deletedTimeline);
+    }
+
+    setTimelines(newTimelines);
   }
 
-  function onTimelinesChange(params: HistoryItemOnChangeParams) {
+  function onTimelinesChange(params: TimelineOnChangeParams) {
     switch (params.type) {
       case 'DELETE':
         onTimelineDelete(params);
@@ -89,16 +77,6 @@ export function Component() {
       return [...prevTimelines, newTimeline];
     });
   }
-
-  useEffect(() => {
-    fetch('http://localhost:8888/timelines')
-      .then((res) => {
-        return res.json();
-      })
-      .then((timelinesResponse: TimelineResponse[]) => {
-        setTimelines(timelineResponseToState(timelinesResponse));
-      });
-  }, []);
 
   return (
     <Presentation

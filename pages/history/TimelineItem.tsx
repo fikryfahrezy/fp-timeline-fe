@@ -1,11 +1,11 @@
-import { type HistoryItemProps } from './types';
+import { type TimelineItemProps } from './types';
 
 import Timeline from './Timeline';
 import Date from './Date';
 import Title from './Title';
 import Description from './Description';
 
-function HistoryItem({ timeline, onChange }: HistoryItemProps) {
+function TimelineItem({ timeline, onChange }: TimelineItemProps) {
   function onDelete() {
     onChange({ id: timeline.id, type: 'DELETE' });
   }
@@ -40,4 +40,4 @@ function HistoryItem({ timeline, onChange }: HistoryItemProps) {
   );
 }
 
-export default HistoryItem;
+export default TimelineItem;

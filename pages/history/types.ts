@@ -1,4 +1,6 @@
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
+
+import { type TimelineProperty } from '@/model/types';
 
 import Timeline from '@/model/timeline';
 
@@ -7,32 +9,28 @@ export type FieldProps = {
   content: string;
 };
 
-export type HistoryItemIdentifier = {
+export type TimelineIdentifier = {
   id: number;
 };
 
-export type HistoryItemOnInsertFieldname = 'startDate' | 'endDate' | 'title' | 'description';
-
-export type HistoryItemOnInsertParams = HistoryItemIdentifier & {
-  field: HistoryItemOnInsertFieldname;
+export type TimelineOnInsertParams = TimelineIdentifier & {
+  field: TimelineProperty;
   value: string;
 };
 
-export type HistoryItemOnChangeType = 'INSERT' | 'DELETE';
+export type TimelineOnChangeParams =
+  | ({ type: 'INSERT' } & TimelineOnInsertParams)
+  | ({ type: 'DELETE' } & TimelineIdentifier);
 
-export type HistoryItemOnChangeParams =
-  | ({ type: 'INSERT' } & HistoryItemOnInsertParams)
-  | ({ type: 'DELETE' } & HistoryItemIdentifier);
-
-export type HistoryItemField = {
-  onChange: (params: HistoryItemOnChangeParams) => void;
+export type TimelineField = {
+  onChange: (params: TimelineOnChangeParams) => void;
 };
 
-export type HistoryItemProps = HistoryItemField & {
+export type TimelineItemProps = TimelineField & {
   timeline: Timeline;
 };
 
-export type HistoryPresentationProps = HistoryItemField & {
+export type TimelinePresentationProps = TimelineField & {
   onAddTimelineClick: () => void;
   timelines: Timeline[];
 };
@@ -40,23 +38,4 @@ export type HistoryPresentationProps = HistoryItemField & {
 export type TimelineProps = {
   onDelete: () => void;
   children?: ReactNode;
-};
-
-export type ChangeTimelineParams = {
-  prevTimelines: Timeline[];
-  timelineId: number;
-  field: HistoryItemOnInsertFieldname;
-  value: string;
-};
-
-export type TimelineResponse = {
-  description: string;
-  end_date: string;
-  id: number;
-  start_date: string;
-  title: string;
-};
-
-export type TimelineMessage = TimelineResponse & {
-  type: HistoryItemOnChangeType;
 };
