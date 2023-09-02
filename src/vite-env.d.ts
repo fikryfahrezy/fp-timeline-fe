@@ -7,3 +7,12 @@ declare module '*.svg' {
     React.SVGProps<SVGSVGElement> & { title?: string }
   >;
 }
+
+interface ImportMetaEnv {
+  readonly VITE_HTTP_URL: string
+  readonly VITE_WS_URL: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}

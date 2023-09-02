@@ -7,6 +7,9 @@ import { setTimeline } from './mutator';
 import useWebsocket, { type UseWebsocketOptions } from './useWebsocket';
 import { timelineResponseToState } from './transformer';
 
+const wsServer = import.meta.env.VITE_WS_URL;
+const httpServer = import.meta.env.VITE_HTTP_URL;
+
 function useTimelineManagement() {
   const [timelines, setTimelines] = useState<Timeline[]>([]);
 
@@ -19,11 +22,11 @@ function useTimelineManagement() {
 
   const { sendMessage } = useWebsocket({
     onReceiveMessage,
-    url: 'ws://localhost:9999/ws',
+    url: `${wsServer}/ws`,
   });
 
   useEffect(() => {
-    fetch('http://localhost:9999/timelines')
+    fetch(`${httpServer}/timelines`)
       .then((res) => {
         return res.json();
       })
